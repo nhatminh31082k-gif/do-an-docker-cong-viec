@@ -3,56 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Task Master</title>
+    <title>Task Master Ultra</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        body { background: #0f172a; min-height: 100vh; font-family: 'Plus Jakarta Sans', sans-serif; color: #f8fafc; }
-        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; }
-        .progress { height: 8px; border-radius: 10px; background: rgba(255,255,255,0.1); }
-        .task-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; transition: 0.3s; margin-bottom: 12px; }
-        .task-item:hover { background: rgba(255,255,255,0.08); transform: scale(1.01); }
-        .completed-text { text-decoration: line-through; color: #64748b !important; }
-        .form-control, .form-select { background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255,255,255,0.1); color: white; }
-        .form-control:focus { background: rgba(15, 23, 42, 0.8); color: white; border-color: #38bdf8; box-shadow: none; }
-        .btn-primary { background: #38bdf8; border: none; font-weight: 600; }
-        .nav-pills .nav-link { color: #94a3b8; }
-        .nav-pills .nav-link.active { background: #38bdf8; }
+        :root { --primary: #6366f1; --bg: #0f172a; }
+        body { background: var(--bg); color: #f8fafc; font-family: 'Segoe UI', sans-serif; }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(15px); border-radius: 28px; border: 1px solid rgba(255,255,255,0.1); }
+        .pomodoro-box { background: linear-gradient(135deg, #4f46e5, #06b6d4); border-radius: 20px; padding: 20px; text-align: center; margin-bottom: 25px; }
+        .timer-display { font-size: 3.5rem; font-weight: 800; letter-spacing: -2px; }
+        .task-card { background: rgba(255,255,255,0.03); border-radius: 18px; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
+        .task-card:hover { border-color: var(--primary); background: rgba(255,255,255,0.06); }
+        .priority-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
     </style>
 </head>
 <body>
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="glass-card p-4 shadow-lg">
-                    <h2 class="text-center mb-4 fw-bold text-info"><i class="fas fa-layer-group me-2"></i>TASK MASTER PRO</h2>
-                    
+    <div class="container py-4">
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-6">
+                <div class="pomodoro-box shadow-lg">
+                    <h6 class="text-uppercase small fw-bold mb-2">Chế độ tập trung (Pomodoro)</h6>
+                    <div class="timer-display" id="timer">25:00</div>
+                    <div class="mt-2">
+                        <button class="btn btn-light btn-sm fw-bold px-4 rounded-pill" onclick="toggleTimer()" id="timerBtn">BẮT ĐẦU</button>
+                        <button class="btn btn-outline-light btn-sm rounded-pill ms-2" onclick="resetTimer()">RESET</button>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-4">
                     <div class="mb-4">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span class="small">Tiến độ hoàn thành</span>
-                            <span class="small fw-bold" id="progressText">0%</span>
-                        </div>
-                        <div class="progress">
-                            <div id="progressBar" class="progress-bar bg-info" role="progressbar" style="width: 0%"></div>
+                        <input type="text" id="taskInput" class="form-control bg-dark text-white border-0 mb-2" placeholder="Tên công việc...">
+                        <textarea id="descInput" class="form-control bg-dark text-white border-0 small mb-2" rows="2" placeholder="Ghi chú thêm (không bắt buộc)..."></textarea>
+                        <div class="d-flex gap-2">
+                            <select id="priorityInput" class="form-select bg-dark text-white border-0">
+                                <option value="Low">Mức Thấp</option>
+                                <option value="Normal" selected>Mức Vừa</option>
+                                <option value="High">Mức Cao (Gấp)</option>
+                            </select>
+                            <button class="btn btn-primary px-4 fw-bold" onclick="addTask()">THÊM</button>
                         </div>
                     </div>
 
-                    <div class="input-group mb-4 shadow-sm">
-                        <input type="text" id="taskInput" class="form-control" placeholder="Thêm việc mới...">
-                        <select id="priorityInput" class="form-select" style="max-width: 120px;">
-                            <option value="Low">Thấp</option>
-                            <option value="Normal" selected>Vừa</option>
-                            <option value="High">Gấp!</option>
-                        </select>
-                        <button class="btn btn-primary px-4" onclick="addTask()"><i class="fas fa-paper-plane"></i></button>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="progress w-50" style="height: 6px; background: #334155;">
+                            <div id="pBar" class="progress-bar bg-info" style="width: 0%"></div>
+                        </div>
+                        <span class="badge bg-secondary" id="count">0 Tasks</span>
                     </div>
-
-                    <ul class="nav nav-pills nav-justified mb-4 p-1 bg-dark rounded-pill" style="--bs-bg-opacity: .5;">
-                        <li class="nav-item"><a class="nav-link active small py-1" href="#" onclick="filterTasks('all', this)">Tất cả</a></li>
-                        <li class="nav-item"><a class="nav-link small py-1" href="#" onclick="filterTasks('pending', this)">Đang làm</a></li>
-                        <li class="nav-item"><a class="nav-link small py-1" href="#" onclick="filterTasks('done', this)">Đã xong</a></li>
-                    </ul>
 
                     <div id="taskList"></div>
                 </div>
@@ -61,37 +59,52 @@
     </div>
 
     <script>
-        let allTasks = [];
-
-        async function loadTasks() {
-            const res = await fetch('/api/tasks');
-            allTasks = await res.json();
-            updateUI(allTasks);
+        // Logic Đồng hồ Pomodoro
+        let timeLeft = 1500;
+        let timerId = null;
+        function toggleTimer() {
+            if (timerId) {
+                clearInterval(timerId); timerId = null;
+                document.getElementById('timerBtn').innerText = "TIẾP TỤC";
+            } else {
+                timerId = setInterval(() => {
+                    timeLeft--; updateTimerDisplay();
+                    if (timeLeft === 0) { clearInterval(timerId); alert("Hết giờ làm việc! Nghỉ ngơi thôi."); resetTimer(); }
+                }, 1000);
+                document.getElementById('timerBtn').innerText = "TẠM DỪNG";
+            }
+        }
+        function resetTimer() { timeLeft = 1500; updateTimerDisplay(); clearInterval(timerId); timerId = null; document.getElementById('timerBtn').innerText = "BẮT ĐẦU"; }
+        function updateTimerDisplay() {
+            const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
+            document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
         }
 
-        function updateUI(tasks) {
-            const list = document.getElementById('taskList');
-            list.innerHTML = '';
+        // Logic Task
+        async function loadTasks() {
+            const res = await fetch('/api/tasks'); const tasks = await res.json();
+            const list = document.getElementById('taskList'); list.innerHTML = '';
+            document.getElementById('count').innerText = `${tasks.length} Việc`;
             
-            // Cập nhật tiến độ
-            const completedCount = allTasks.filter(t => t.completed).length;
-            const percent = allTasks.length > 0 ? Math.round((completedCount / allTasks.length) * 100) : 0;
-            document.getElementById('progressBar').style.width = percent + '%';
-            document.getElementById('progressText').innerText = percent + '%';
+            const done = tasks.filter(t => t.completed).length;
+            document.getElementById('pBar').style.width = (tasks.length ? (done/tasks.length)*100 : 0) + '%';
 
             tasks.forEach(t => {
-                const priorityColor = t.priority === 'High' ? 'text-danger' : (t.priority === 'Normal' ? 'text-warning' : 'text-success');
+                const color = t.priority === 'High' ? '#ef4444' : (t.priority === 'Normal' ? '#f59e0b' : '#10b981');
                 list.innerHTML += `
-                    <div class="task-item p-3 d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input border-info" ${t.completed ? 'checked' : ''} onchange="toggleTask('${t.id}', ${t.completed})">
+                    <div class="task-card p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="d-flex gap-3">
+                                <input type="checkbox" class="form-check-input mt-1" ${t.completed ? 'checked' : ''} onchange="toggleTask('${t.id}', ${t.completed})">
+                                <div>
+                                    <h6 class="m-0 ${t.completed ? 'text-decoration-line-through text-secondary' : ''}">${t.content}</h6>
+                                    <p class="small text-secondary m-0 mt-1">${t.description || 'Không có ghi chú'}</p>
+                                </div>
                             </div>
-                            <span class="ms-3 ${t.completed ? 'completed-text' : 'fw-medium'}">${t.content}</span>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-circle ms-2 small ${priorityColor}" style="font-size: 8px;"></i>
-                            <button class="btn btn-link text-secondary ms-3 p-0" onclick="deleteTask('${t.id}')"><i class="fas fa-trash-alt"></i></button>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="priority-dot" style="background: ${color}"></span>
+                                <button class="btn btn-link text-danger p-0 ms-2" onclick="deleteTask('${t.id}')"><i class="fas fa-trash-alt"></i></button>
+                            </div>
                         </div>
                     </div>`;
             });
@@ -99,38 +112,26 @@
 
         async function addTask() {
             const content = document.getElementById('taskInput').value;
+            const description = document.getElementById('descInput').value;
             const priority = document.getElementById('priorityInput').value;
-            if (!content) return;
+            if(!content) return;
             await fetch('/api/tasks', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({content, priority})
+                body: JSON.stringify({content, description, priority})
             });
-            document.getElementById('taskInput').value = '';
+            document.getElementById('taskInput').value = ''; document.getElementById('descInput').value = '';
             loadTasks();
         }
 
-        async function toggleTask(id, currentStatus) {
-            if (!currentStatus) {
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#38bdf8', '#fbbf24', '#f87171'] });
-            }
+        async function toggleTask(id, isDone) {
+            if(!isDone) confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
             await fetch(`/api/tasks/${id}/toggle`, { method: 'PATCH' });
             loadTasks();
         }
 
-        function filterTasks(type, el) {
-            document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
-            el.classList.add('active');
-            if (type === 'all') updateUI(allTasks);
-            else if (type === 'pending') updateUI(allTasks.filter(t => !t.completed));
-            else updateUI(allTasks.filter(t => t.completed));
-        }
-
         async function deleteTask(id) {
-            if(confirm("Xóa công việc này?")) {
-                await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
-                loadTasks();
-            }
+            if(confirm("Xóa nhé?")) { await fetch(`/api/tasks/${id}`, { method: 'DELETE' }); loadTasks(); }
         }
         loadTasks();
     </script>
