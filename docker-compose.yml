@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  web-app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://db-mongo:27017/task_db
+    depends_on:
+      - db-mongo
+
+  db-mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - db_data:/data/db
+
+volumes:
+  db_data:

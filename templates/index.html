@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý công việc - Docker Demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; text-align: center; }
+        input[type="text"] { width: 70%; padding: 10px; font-size: 16px; margin-bottom: 20px; }
+        button { padding: 10px 20px; font-size: 16px; background-color: #28a745; color: white; border: none; cursor: pointer; }
+        ul { list-style-type: none; padding: 0; text-align: left; }
+        li { background: #f8f9fa; margin: 10px 0; padding: 15px; border-left: 5px solid #007bff; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <h2>📋 Quản lý Công việc (Chạy trên Docker + MongoDB)</h2>
+    
+    <input type="text" id="taskInput" placeholder="Nhập công việc mới...">
+    <button onclick="addTask()">Thêm việc</button>
+
+    <ul id="taskList">
+        </ul>
+
+    <script>
+        // Lấy danh sách từ Backend khi vừa mở web
+        function loadTasks() {
+            fetch('/api/tasks')
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById('taskList');
+                    list.innerHTML = '';
+                    data.forEach(task => {
+                        list.innerHTML += `<li>${task.content}</li>`;
+                    });
+                });
+        }
+
+        // Gửi công việc mới lên Backend
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            if (input.value.trim() === '') return;
+
+            fetch('/api/tasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: input.value })
+            }).then(() => {
+                input.value = ''; // Xóa ô nhập
+                loadTasks();      // Tải lại danh sách
+            });
+        }
+
+        // Chạy lần đầu
+        loadTasks();
+    </script>
+</body>
+</html>
