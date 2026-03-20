@@ -5,7 +5,8 @@ from pymongo import MongoClient
 app = Flask(__name__)
 
 # Kết nối MongoDB qua mạng nội bộ của Docker Compose
-mongo_uri = os.environ.get('MONGO_URI', 'mongodb://db-mongo:27017/task_db')
+# Kết nối MongoDB Atlas (Database trên mây)
+mongo_uri = "mongodb+srv://nhatminh31082k_db_user:pIH1UwtJ3RjGXdaB@cluster0.zhmxffs.mongodb.net/task_db?retryWrites=true&w=majority&appName=Cluster0"
 client = MongoClient(mongo_uri)
 db = client.task_db
 tasks_collection = db.tasks
